@@ -9,7 +9,6 @@ namespace EFCoreLazyLoadingDynamicProxy.WebApi.Models
         public int StudentId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        [IgnoreDataMember]
         public int TeacherId { get; set; }
         public Teacher LeaderProfessor { get; set; }
     }

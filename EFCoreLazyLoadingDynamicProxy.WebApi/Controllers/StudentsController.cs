@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using EFCoreLazyLoadingDynamicProxy.WebApi.Models;
+using EFCoreLazyLoadingDynamicProxy.WebApi.ViewModels;
 
 namespace EFCoreLazyLoadingDynamicProxy.WebApi.Controllers
 {
@@ -27,95 +28,126 @@ namespace EFCoreLazyLoadingDynamicProxy.WebApi.Controllers
         //    return await _context.Student.ToListAsync();
         //}
 
-
-        [HttpGet]
-        public ActionResult<IEnumerable<Student>> GetStudent()
-        {
-
-            var students = _db.Student.Include(s => s.LeaderProfessor);
-            //foreach (var teacher in teachers)
+          //foreach (var teacher in teachers)
             //{
             //    foreach (var student in teacher.Students) 
             //    {
-
+            // ghgh
             //    }
             //}
-            var studentList= students.ToList();
-            return studentList;
-        }
-        // GET: api/Students/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Student>> GetStudent(int id)
+        [HttpGet]
+        public ActionResult<IEnumerable<StudentViewModel>> GetStudent()
         {
-            var student = await _db.Student.FindAsync(id);
 
-            if (student == null)
+         //   var students = _db.Student.Include(s => s.LeaderProfessor);
+
+
+            return _db.Student.Select(s => new StudentViewModel()
             {
-                return NotFound();
-            }
-
-            return student;
-        }
-
-        // PUT: api/Students/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutStudent(int id, Student student)
-        {
-            if (id != student.StudentId)
-            {
-                return BadRequest();
-            }
-
-            _db.Entry(student).State = EntityState.Modified;
-
-            try
-            {
-                await _db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!StudentExists(id))
+                Id = s.StudentId,
+                FirstName = s.FirstName,
+                LastName = s.LastName,
+                Professor = new TeacherDto
                 {
-                    return NotFound();
+                    Id = s.LeaderProfessor.TeacherId,
+                    FirstName = s.LeaderProfessor.FirstName,
+                    LastName = s.LeaderProfessor.LastName
                 }
-                else
-                {
-                    throw;
-                }
-            }
+            }).ToList();
 
-            return NoContent();
+            //var studentsVm = new List<StudentViewModel>();
+            //foreach (var student in students)
+            //{
+            
+            //    studentsVm.Add(new StudentViewModel
+            //    {
+            //        Id = student.StudentId,
+            //        FirstName = student.FirstName,
+            //        LastName = student.LastName,
+            //        Professor = new TeacherDto
+            //        {
+            //            Id = student.LeaderProfessor.TeacherId,
+            //            FirstName = student.LeaderProfessor.FirstName,
+            //            LastName = student.LeaderProfessor.LastName
+            //        }
+            //    });
+            //}
+            //return studentsVm;
         }
+        
+    // GET: api/Students/5
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Student>> GetStudent(int id)
+    {
+        var student = await _db.Student.FindAsync(id);
 
-        // POST: api/Students
-        [HttpPost]
-        public async Task<ActionResult<Student>> PostStudent(Student student)
+        if (student == null)
         {
-            _db.Student.Add(student);
-            await _db.SaveChangesAsync();
-
-            return CreatedAtAction("GetStudent", new { id = student.StudentId }, student);
+            return NotFound();
         }
 
-        // DELETE: api/Students/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Student>> DeleteStudent(int id)
-        {
-            var student = await _db.Student.FindAsync(id);
-            if (student == null)
-            {
-                return NotFound();
-            }
-
-            _db.Student.Remove(student);
-            await _db.SaveChangesAsync();
-
-            return student;
-        }
-
-        private bool StudentExists(int id)
-        {
-            return _db.Student.Any(e => e.StudentId == id);
-        }
+        return student;
     }
+
+    // PUT: api/Students/5
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutStudent(int id, Student student)
+    {
+        if (id != student.StudentId)
+        {
+            return BadRequest();
+        }
+
+        _db.Entry(student).State = EntityState.Modified;
+
+        try
+        {
+            await _db.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!StudentExists(id))
+            {
+                return NotFound();
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        return NoContent();
+    }
+
+    // POST: api/Students
+    [HttpPost]
+    public async Task<ActionResult<Student>> PostStudent(Student student)
+    {
+        _db.Student.Add(student);
+        await _db.SaveChangesAsync();
+
+        return CreatedAtAction("GetStudent", new { id = student.StudentId }, student);
+    }
+
+    // DELETE: api/Students/5
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<Student>> DeleteStudent(int id)
+    {
+        var student = await _db.Student.FindAsync(id);
+        if (student == null)
+        {
+            return NotFound();
+        }
+
+        _db.Student.Remove(student);
+        await _db.SaveChangesAsync();
+
+        return student;
+    }
+
+    private bool StudentExists(int id)
+    {
+        return _db.Student.Any(e => e.StudentId == id);
+    }
+}
 }
