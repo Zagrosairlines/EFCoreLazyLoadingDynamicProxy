@@ -1,11 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace EFCoreLazyLoadingDynamicProxy.WebApi.Models
 {
-    public class Teacher
+    [Serializable]
+    public class Teacher //: IHaveIntId, IHaveName
     {
-        public int Id{ get; set; }
+        public int TeacherId { get; set; }
         public string FirstName { get; set; }
-        public virtual ICollection<Student> Students { get; set; }
+        public string LastName { get; set; }
+        [IgnoreDataMember]
+        public ICollection<Student> Students { get; set; }
     }
 }

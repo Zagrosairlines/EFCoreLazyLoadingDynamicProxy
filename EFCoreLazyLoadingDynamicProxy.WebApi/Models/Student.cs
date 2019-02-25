@@ -1,9 +1,16 @@
-﻿namespace EFCoreLazyLoadingDynamicProxy.WebApi.Models
+﻿using System;
+using System.Runtime.Serialization;
+
+namespace EFCoreLazyLoadingDynamicProxy.WebApi.Models
 {
-    public class Student
+    [Serializable]
+    public class Student /*: IHaveIntId, IHaveName*/
     {
-        public int Id { get; set; }
+        public int StudentId { get; set; }
         public string FirstName { get; set; }
-        public virtual Teacher LeaderProfessor { get; set; }
+        public string LastName { get; set; }
+        [IgnoreDataMember]
+        public int TeacherId { get; set; }
+        public Teacher LeaderProfessor { get; set; }
     }
 }
